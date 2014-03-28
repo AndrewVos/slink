@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+
+require "rainbow"
+require "ostruct"
+require "fileutils"
+
+if really = ARGV.include?("--really")
+  puts "You specified --really so I'm going to go ahead and makes these changes to your files. Good luck!".color(:red), ""
+else
+  puts "You didn't specify --really so these changes won't really happen.".color(:green), ""
+end
+
+def split_path(path)
+  array = []
+  until ['/', '.'].include? path
+    array << File.basename(path)
+    path = File.dirname(path)
+  end
+  array.reverse
+end
+
+results = {:ignore => {}, :create => {}, :overwrite => {}}
+
+Dir.glob("**/*.symlink", File::FNM_DOTMATCH) do |symlink|
+  source = symlink
+  first_part = split_path(symlink).first
+  target = File.join("~", source[(first_part.length)..-1]).gsub(/\.symlink/, "")
+
+  full_source = File.expand_path(source)
+  full_target = File.expand_path(target)
+  if File.exist?(full_target) && File.symlink?(full_target) && File.readlink(full_target) == File.expand_path(source)
+    results[:ignore][source] = target
+  elsif File.exist?(full_target) || File.symlink?(full_target)
+    results[:overwrite][source] = target
+  else
+    results[:create][source] = target
+  end
+end
+
+longest_source = Dir.glob("**/*.symlink", File::FNM_DOTMATCH).max_by(&:length).length
+
+if results[:ignore].any?
+  puts "These files will ignored, because they are already correctly symlinked:".color(:green)
+  results[:ignore].each do |source, target|
+    puts "#{source.ljust(longest_source)} => #{target}".color(:green)
+  end
+  puts
+end
+
+if results[:overwrite].any?
+  puts "These files will be deleted and then symlinked:".color(:red)
+  results[:overwrite].each do |source, target|
+    puts "#{source.ljust(longest_source)} => #{target}".color(:red)
+    if really
+      FileUtils.remove_entry File.expand_path(target)
+      File.symlink(File.expand_path(source), File.expand_path(target))
+    end
+  end
+  puts
+end
+
+if results[:create].any?
+  puts "These files don't exist, so it is safe to symlink them:".color(:blue)
+  results[:create].each do |source, target|
+    puts "#{source.ljust(longest_source)} => #{target}".color(:blue)
+    if really
+      File.symlink(File.expand_path(source), File.expand_path(target))
+    end
+  end
+end
