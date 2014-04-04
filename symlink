@@ -1,13 +1,18 @@
 #!/usr/bin/env ruby
 
-require "rainbow"
 require "ostruct"
 require "fileutils"
 
+class String
+  def red;   "\033[31m#{self}\033[0m" end
+  def green; "\033[32m#{self}\033[0m" end
+  def blue;  "\033[34m#{self}\033[0m" end
+end
+
 if really = ARGV.include?("--really")
-  puts "You specified --really so I'm going to go ahead and makes these changes to your files. Good luck!".color(:red), ""
+  puts "You specified --really so I'm going to go ahead and makes these changes to your files. Good luck!".red, ""
 else
-  puts "You didn't specify --really so these changes won't really happen.".color(:green), ""
+  puts "You didn't specify --really so these changes won't really happen.".green, ""
 end
 
 def split_path(path)
@@ -40,17 +45,17 @@ end
 longest_source = Dir.glob("**/*.symlink", File::FNM_DOTMATCH).max_by(&:length).length
 
 if results[:ignore].any?
-  puts "These files will ignored, because they are already correctly symlinked:".color(:green)
+  puts "These files will ignored, because they are already correctly symlinked:".green
   results[:ignore].each do |source, target|
-    puts "#{source.ljust(longest_source)} => #{target}".color(:green)
+    puts "#{source.ljust(longest_source)} => #{target}".green
   end
   puts
 end
 
 if results[:overwrite].any?
-  puts "These files will be deleted and then symlinked:".color(:red)
+  puts "These files will be deleted and then symlinked:".red
   results[:overwrite].each do |source, target|
-    puts "#{source.ljust(longest_source)} => #{target}".color(:red)
+    puts "#{source.ljust(longest_source)} => #{target}".red
     if really
       FileUtils.remove_entry File.expand_path(target)
       File.symlink(File.expand_path(source), File.expand_path(target))
@@ -60,9 +65,9 @@ if results[:overwrite].any?
 end
 
 if results[:create].any?
-  puts "These files don't exist, so it is safe to symlink them:".color(:blue)
+  puts "These files don't exist, so it is safe to symlink them:".blue
   results[:create].each do |source, target|
-    puts "#{source.ljust(longest_source)} => #{target}".color(:blue)
+    puts "#{source.ljust(longest_source)} => #{target}".blue
     if really
       File.symlink(File.expand_path(source), File.expand_path(target))
     end
