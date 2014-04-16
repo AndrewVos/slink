@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require "ostruct"
-require "fileutils"
 
 class String
   def red;   "\033[31m#{self}\033[0m" end
@@ -26,7 +25,9 @@ end
 
 results = {:ignore => {}, :create => {}, :overwrite => {}}
 
-Dir.glob("**/*.symlink", File::FNM_DOTMATCH) do |symlink|
+Dir.glob("**/*.symlink", File::FNM_DOTMATCH).select do |symlink|
+  File.expand_path(File.dirname(symlink)) != File.expand_path(".")
+end.each do |symlink|
   source = symlink
   first_part = split_path(symlink).first
   target = File.join("~", source[(first_part.length)..-1]).gsub(/\.symlink/, "")
@@ -53,13 +54,9 @@ if results[:ignore].any?
 end
 
 if results[:overwrite].any?
-  puts "These files will be deleted and then symlinked:".red
+  puts "These files will not be touched, so you can decide what to do with them:".red
   results[:overwrite].each do |source, target|
     puts "#{source.ljust(longest_source)} => #{target}".red
-    if really
-      FileUtils.remove_entry File.expand_path(target)
-      File.symlink(File.expand_path(source), File.expand_path(target))
-    end
   end
   puts
 end
