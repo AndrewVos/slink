@@ -2,6 +2,16 @@
 
 Helps to symlink dotfiles that may be stored somewhere else.
 
+## Installation
+
+You don't really need to install `slink` but if you really want:
+
+```
+git clone https://github.com/AndrewVos/slink
+sudo mv slink/slink /usr/local/bin
+rm -rf slink
+```
+
 ## Usage
 
 Rename your directories and files with the extension .symlink
