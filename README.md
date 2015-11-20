@@ -1,15 +1,38 @@
-# dotfile-symlinker
+# slink
 
 Helps to symlink dotfiles that may be stored somewhere else.
 
 ## Installation
 
-You don't really need to install `slink` but if you really want:
+### From binaries:
+
+#### 64 bit
+
+```
+wget https://raw.githubusercontent.com/AndrewVos/slink/master/bin/64/slink
+chmod +x slink
+sudo mv slink /usr/local/bin
+```
+
+#### 32 bit
+
+```
+wget https://raw.githubusercontent.com/AndrewVos/slink/master/bin/32/slink
+chmod +x slink
+sudo mv slink /usr/local/bin
+```
+
+### From Source:
+
+First, you need to install [nim](http://nim-lang.org/download.html).
+
+Then:
 
 ```
 git clone https://github.com/AndrewVos/slink
-sudo mv slink/slink /usr/local/bin
-rm -rf slink
+cd slink
+nim compile -d:release
+sudo mv slink /usr/local/bin
 ```
 
 ## Usage
