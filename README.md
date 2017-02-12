@@ -4,22 +4,10 @@ Helps to symlink dotfiles that may be stored somewhere else.
 
 ## Installation
 
-### From binaries:
-
-#### 64 bit
+### Linux
 
 ```
-wget https://raw.githubusercontent.com/AndrewVos/slink/master/bin/64/slink
-chmod +x slink
-sudo mv slink /usr/local/bin
-```
-
-#### 32 bit
-
-```
-wget https://raw.githubusercontent.com/AndrewVos/slink/master/bin/32/slink
-chmod +x slink
-sudo mv slink /usr/local/bin
+[sudo] snap install slink
 ```
 
 ### From Source:

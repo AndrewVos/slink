@@ -1,10 +1,13 @@
-all: bin/32/slink bin/64/slink
+all: slink
 
-bin/64/slink:
-	mkdir -p bin/64
-	nim compile -d:release --out:bin/64/slink slink.nim
-
-bin/32/slink:
-	# requires libc6-dev-i386
-	mkdir -p bin/32
-	nim compile -d:release --passC:-m32 --passL:-m32 --cpu:i386 --out:bin/32/slink slink.nim
+slink:
+	nim compile -d:release --out:slink slink.nim
+install:
+	mkdir -p $(DESTDIR)/bin
+	mv slink $(DESTDIR)/bin
+	chmod a+x $(DESTDIR)/bin/slink
+publish:
+	rm *.snap || :
+	snapcraft clean
+	snapcraft
+	snapcraft push *.snap --release stable

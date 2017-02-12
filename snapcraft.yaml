@@ -1,0 +1,28 @@
+name: slink
+version: '0.2'
+summary: Tool to symlink dotfiles that are stored somewhere else
+description: |
+  Allows you to store your dotfiles somewhere else and easily symlink
+  them to your home directory.
+confinement: strict
+apps:
+  slink:
+    command: ./bin/slink
+    plugs: [home]
+parts:
+  slink:
+    plugin: make
+    source: .
+    after:
+      - nim
+    prime:
+      - bin/slink
+  nim:
+    plugin: dump
+    source: https://nim-lang.org/download/nim-0.16.0.tar.xz
+    prepare: |
+      ./build.sh
+    stage:
+      - .
+    prime:
+      - -*
